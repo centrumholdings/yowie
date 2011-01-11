@@ -1,6 +1,43 @@
-===========================================================
-Yowie - utilities for safe reading Python file-like objects
-===========================================================
+=============
+Yowie library
+=============
+
+This Python/Django library provides utilities for safe reading large
+file-like objects.
+
+
+-------------------
+yowie.open_url(url)
+-------------------
+
+This function open url and return file object. Url attribute can be local
+file path or full url path. Allowed protocols are file, http and ftp.
+
+open_url('/home/praetorian/secret.txt')
+open_url('file:///home/praetorian/secret.txt')
+open_url('http://domain.tld/secret.txt')
+open_url('ftp://domain.tld/secret.txt')
+
+----------------------------------------------------
+class yowie.LimitedFile(file_descriptor, limit=None)
+----------------------------------------------------
+
+File-like object wrapper which raise LimitedFileSizeOverflow exception
+if file content length is greater then limit. Default limit is
+settings.LIMITEDFILE_MAX_SIZE bytes or 10MB, if setting doesn't exist.
+Override read([size]), readline([size]) and readlines([sizehint]) methods.
+Sum of data, which has been read, is stored in the total attribute.
+
+---------------------------------------
+exception yowie.LimitedFileSizeOverflow
+---------------------------------------
+
+LimitedFile class raise this exception if file content length is greater
+then limit.
+
+
+Example:
+--------
 
 >>> from yowie import LimitedFile, open_url
 
@@ -11,7 +48,11 @@ Yowie - utilities for safe reading Python file-like objects
 >>> content += lf.read(1024*512)
 >>> content += lf.read(1024*512)
 >>> content += lf.read(1024*512)
-LimitedFileSizeOverflow: File content is too long
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/lib/python2.7/site-packages/yowie/fileutils.py", line 55, in read
+    raise LimitedFileSizeOverflow('File content is too long')
+yowie.fileutils.LimitedFileSizeOverflow: File content is too long
 
 >>> lf.total
 1048577
