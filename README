@@ -1,0 +1,17 @@
+===========================================================
+Yowie - utilities for safe reading Python file-like objects
+===========================================================
+
+>>> from yowie import LimitedFile, open_url
+
+>>> fd = open_url('my_big_file.txt')
+>>> lf = LimitedFile(fd, 1024*1024)
+
+>>> content = ''
+>>> content += lf.read(1024*512)
+>>> content += lf.read(1024*512)
+>>> content += lf.read(1024*512)
+LimitedFileSizeOverflow: File content is too long
+
+>>> lf.total
+1048577
