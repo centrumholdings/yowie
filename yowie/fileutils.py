@@ -61,6 +61,10 @@ class LimitedFile(FileProxyMixin):
 
         return size
 
+    @staticmethod
+    def open_url(url, limit=None):
+        return LimitedFile(open_url(url), limit)
+
     def read(self, size=None):
         " read(self [, size]) "
         content = super(LimitedFile, self).read(self._normalize_size(size))
@@ -97,3 +101,10 @@ class LimitedFile(FileProxyMixin):
                 break
 
         return lines
+
+    def next(self):
+        " next(self) "
+        line = self.readline()
+        if not line:
+            raise StopIteration()
+        return line

@@ -12,6 +12,10 @@ class TestLimitedFile(TestCase):
     def setUp(self):
         self.fd = StringIO(self.content)
 
+    def test_open_file(self):
+        fd = LimitedFile.open_url('file://%s' % settings.EXAMPLE_RSS_FEED)
+        self.assertTrue(fd)
+
     def test_default_read(self):
         f = LimitedFile(self.fd)
         self.assertEquals(f.read(), self.content)
@@ -80,6 +84,14 @@ class TestLimitedFile(TestCase):
         self.assertEquals(f.readline(15), 'ABCDEFGHIJ\n')
         self.assertRaises(LimitedFileSizeOverflow, f.readline, 15)
         self.assertEquals(f.total, 23)
+
+    def test_next(self):
+        f = LimitedFile(self.fd)
+        self.assertEquals(f.next(), '0123456789\n')
+        self.assertEquals(f.next(), 'ABCDEFGHIJ\n')
+        self.assertEquals(f.next(), 'KLMNOPQRST')
+        self.assertRaises(StopIteration, f.next)
+        self.assertEquals(f.total, 32)
 
     def test_default_readlines(self):
         f = LimitedFile(self.fd)
