@@ -28,6 +28,19 @@ settings.LIMITEDFILE_MAX_SIZE bytes or 10MB, if setting doesn't exist.
 Override read([size]), readline([size]) and readlines([sizehint]) methods.
 Sum of data, which has been read, is stored in the total attribute.
 
+-------------------------------------------
+yowie.LimitedFile.open_url(url, limit=None)
+-------------------------------------------
+
+Static method, shortcut for:
+
+fd = open_url('my_big_file.txt')
+lf = LimitedFile(fd, 1024*1024)
+
+or
+
+lf = LimitedFile.open_url('my_big_file.txt', 1024*1024)
+
 ---------------------------------------
 exception yowie.LimitedFileSizeOverflow
 ---------------------------------------
