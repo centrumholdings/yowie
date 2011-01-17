@@ -6,12 +6,16 @@ This Python/Django library provides utilities for safe reading large
 file-like objects.
 
 
--------------------
-yowie.open_url(url)
--------------------
+-----------------------------
+yowie.open_url(url, **kwargs)
+-----------------------------
 
 This function open url and return file object. Url attribute can be local
-file path or full url path. Allowed protocols are file, http and ftp.
+file path or full url path. Allowed protocols are local file path, file,
+http and ftp. kwargs - additional attributes according to protocol, e.g.
+'mode' for file://, 'proxy' or 'timeout' for http://.
+
+url argument examples:
 
 open_url('/home/praetorian/secret.txt')
 open_url('file:///home/praetorian/secret.txt')
@@ -28,9 +32,9 @@ settings.LIMITEDFILE_MAX_SIZE bytes or 10MB, if setting doesn't exist.
 Override read([size]), readline([size]) and readlines([sizehint]) methods.
 Sum of data, which has been read, is stored in the total attribute.
 
--------------------------------------------
-yowie.LimitedFile.open_url(url, limit=None)
--------------------------------------------
+-----------------------------------------------------
+yowie.LimitedFile.open_url(url, limit=None, **kwargs)
+-----------------------------------------------------
 
 Static method, shortcut for:
 

@@ -1,4 +1,4 @@
-from urllib2 import urlopen, urlparse, URLError
+from urllib2 import build_opener, ProxyHandler, urlparse, URLError
 
 from django.conf import settings
 from django.core.files.utils import FileProxyMixin
@@ -9,9 +9,9 @@ __all__ = [
     "LimitedFile"
 ]
 
-def open_url(url):
+def open_url(url, **kwargs):
     """
-    open_url(url) - open url and return file descriptor
+    open_url(url, **kwargs) - open url and return file descriptor
 
     url argument examples:
 
@@ -19,17 +19,27 @@ def open_url(url):
     file:///home/praetorian/secret.txt
     http://domain.tld/secret.txt
     ftp://domain.tld/secret.txt
+
+    kwargs - additional attributes according to protocol, 'mode' for file://,
+    'proxy' or 'timeout' for http://
     """
     bits = urlparse.urlsplit(url)
+    attrs = kwargs
 
     if bits.scheme in ('', 'file'):
-        fd = open(bits.netloc + bits.path, 'rb')
+        url = bits.netloc + bits.path
+        opener = open
     elif bits.scheme in ('http', 'ftp'):
-        fd = urlopen(bits.geturl())
+        handlers = []
+        if 'proxy' in attrs:
+            handlers.append(ProxyHandler({bits.scheme: attrs.pop('proxy')}))
+
+        url =  bits.geturl()
+        opener = build_opener(*handlers).open
     else:
         raise URLError("Unsupported protocol '%s'" % bits.scheme)
 
-    return fd
+    return opener(url, **attrs)
 
 
 class LimitedFileSizeOverflow(Exception):
@@ -62,8 +72,21 @@ class LimitedFile(FileProxyMixin):
         return size
 
     @staticmethod
-    def open_url(url, limit=None):
-        return LimitedFile(open_url(url), limit)
+    def open_url(url, limit=None, **kwargs):
+        """
+        open_url(url [, limit [, **kwargs]]) - open url and return file
+        descriptor
+
+        url - url to opening, can be local file path, file://...,
+        http://... and ftp://...
+
+        limit - raise LimitedFileSizeOverflow exception if file content
+        length is greater then limit
+
+        kwargs - additional attributes according to protocol, e.g. 'mode'
+        for file://, 'proxy' or 'timeout' for http:// protocol
+        """
+        return LimitedFile(open_url(url, **kwargs), limit)
 
     def read(self, size=None):
         " read(self [, size]) "
