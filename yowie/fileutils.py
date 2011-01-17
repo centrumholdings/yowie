@@ -13,15 +13,19 @@ def open_url(url, **kwargs):
     """
     open_url(url, **kwargs) - open url and return file descriptor
 
-    url argument examples:
+    url - local file path or full url path. Allowed protocols are local file
+    path, file, http and ftp
 
-    /home/praetorian/secret.txt
-    file:///home/praetorian/secret.txt
-    http://domain.tld/secret.txt
-    ftp://domain.tld/secret.txt
+    kwargs - additional attributes according to protocol, 'mode' for local
+    path and file protocol, 'proxy', 'data' and 'timeout' (Python >= 2.6)
+    for http and ftp protocols
 
-    kwargs - additional attributes according to protocol, 'mode' for file://,
-    'proxy' or 'timeout' for http://
+    Examples:
+
+    open_url('/home/praetorian/secret.txt')
+    open_url('file:///home/praetorian/secret.txt', mode='r')
+    open_url('http://domain.tld/secret.txt', proxy='172:16:1:100:8000')
+    open_url('ftp://domain.tld/secret.txt')
     """
     bits = urlparse.urlsplit(url)
     attrs = kwargs
@@ -74,8 +78,8 @@ class LimitedFile(FileProxyMixin):
     @staticmethod
     def open_url(url, limit=None, **kwargs):
         """
-        open_url(url [, limit [, **kwargs]]) - open url and return file
-        descriptor
+        open_url(url [, limit [, **kwargs]]) - staticmethod, open url and
+        return file descriptor
 
         url - url to opening, can be local file path, file://...,
         http://... and ftp://...
@@ -83,8 +87,17 @@ class LimitedFile(FileProxyMixin):
         limit - raise LimitedFileSizeOverflow exception if file content
         length is greater then limit
 
-        kwargs - additional attributes according to protocol, e.g. 'mode'
-        for file://, 'proxy' or 'timeout' for http:// protocol
+        kwargs - additional attributes according to protocol, 'mode' for
+        local path and file protocol, 'proxy', 'data' and
+        'timeout' (Python >= 2.6) for http and ftp protocols.
+
+        Examples:
+
+        LimitedFile.open_url('/home/praetorian/secret.txt')
+        LimitedFile.open_url('file:///home/praetorian/secret.txt', mode='r')
+        LimitedFile.open_url('http://domain.tld/secret.txt',
+                             limit=1024*1024, proxy='172:16:1:100:8000')
+        LimitedFile.open_url('ftp://domain.tld/secret.txt')
         """
         return LimitedFile(open_url(url, **kwargs), limit)
 
