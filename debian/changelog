@@ -1,3 +1,9 @@
+python-yowie (0.3) unstable; urgency=low
+
+  * Build from fd1584a
+
+ -- Jan Seifert <jan.seifert@centrumholdings.com>  Tue, 25 Jan 2011 16:39:45 +0100
+
 python-yowie (0.1) unstable; urgency=low
 
   * initial build
