@@ -7,6 +7,8 @@ Standards-Version: 3.7.2
 
 Package: centrum-python-yowie
 Provides: centrum-python-yowie
+Conflicts: python-yowie
+Replaces: python-yowie
 Architecture: all
 Depends: ${python:Depends}, ${misc:Depends}, python-django, python-setuptools (>= 0.6b1)
 Description: Utilities for safe reading Python file-like objects
