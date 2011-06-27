@@ -52,7 +52,7 @@ class LimitedFileSizeOverflow(Exception):
 class LimitedFile(FileProxyMixin):
     """
     File-like object wrapper which raise LimitedFileSizeOverflow
-    exception if file content length is greater then limit. Default limit is
+    exception if file content length is greater than limit. Default limit is
     settings.LIMITEDFILE_MAX_SIZE bytes or 10MB, if setting doesn't exist.
 
     LimitedFile(file_descriptor, limit=None)
@@ -144,3 +144,10 @@ class LimitedFile(FileProxyMixin):
         if not line:
             raise StopIteration()
         return line
+
+    def close(self):
+        self.file.close()
+
+    @property
+    def closed(self):
+        return self.file.closed

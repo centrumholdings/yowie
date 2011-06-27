@@ -121,6 +121,13 @@ class TestLimitedFile(TestCase):
         self.assertRaises(LimitedFileSizeOverflow, f.readlines, 25)
         self.assertEquals(f.total, 26)
 
+    def test_limited_close(self):
+        f = LimitedFile(self.fd, 25)
+        self.assertEquals(f.closed, False, "File is not opened")
+        f.close()
+        self.assertEquals(f.closed, True, "File is not closed")
+        self.assertEquals(f.file.closed, f.closed, "Close descriptor of file and wrapper doesnt match")
+
 class TestOpenUrl(TestCase):
     def test_open_url_file_absolute_path(self):
         fd = open_url(settings.EXAMPLE_RSS_FEED)
